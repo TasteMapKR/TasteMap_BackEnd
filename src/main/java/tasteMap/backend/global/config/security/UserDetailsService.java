@@ -1,4 +1,4 @@
-package tasteMap.backend.global.auth;
+package tasteMap.backend.global.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
 import tasteMap.backend.domain.member.entity.Member;
 import tasteMap.backend.domain.member.repository.MemberRepository;
+import tasteMap.backend.global.config.security.CustomUserDetails;
 
 @Service
 @RequiredArgsConstructor

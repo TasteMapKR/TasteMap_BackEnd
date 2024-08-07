@@ -11,7 +11,7 @@ import tasteMap.backend.domain.member.entity.Enum.Role;
 import tasteMap.backend.domain.member.entity.Member;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
 import tasteMap.backend.domain.member.repository.MemberRepository;
-import tasteMap.backend.global.auth.CustomUserDetails;
+import tasteMap.backend.global.config.security.CustomUserDetails;
 import tasteMap.backend.global.oauth2.dto.GoogleResponse;
 import tasteMap.backend.global.oauth2.dto.NaverResponse;
 import tasteMap.backend.global.oauth2.dto.OAuth2Response;
