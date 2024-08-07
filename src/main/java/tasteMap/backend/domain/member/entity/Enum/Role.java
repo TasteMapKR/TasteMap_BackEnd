@@ -1,4 +1,4 @@
-package tasteMap.backend.entity.member.Enum;
+package tasteMap.backend.domain.member.entity.Enum;
 
 public enum Role {
     ROLE_USER,

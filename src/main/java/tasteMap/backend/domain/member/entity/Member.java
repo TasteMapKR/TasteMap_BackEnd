@@ -1,8 +1,8 @@
-package tasteMap.backend.entity.member;
+package tasteMap.backend.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tasteMap.backend.entity.member.Enum.Role;
+import tasteMap.backend.domain.member.entity.Enum.Role;
 
 @Getter
 @Setter

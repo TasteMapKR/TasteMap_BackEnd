@@ -1,9 +1,9 @@
-package tasteMap.backend.entity.feedback;
+package tasteMap.backend.domain.feedback;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tasteMap.backend.entity.member.Member;
-import tasteMap.backend.entity.root.Root;
+import tasteMap.backend.domain.member.entity.Member;
+
 @Getter
 @Setter
 @Entity

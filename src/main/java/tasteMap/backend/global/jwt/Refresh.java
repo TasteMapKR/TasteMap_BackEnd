@@ -2,7 +2,7 @@ package tasteMap.backend.global.jwt;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tasteMap.backend.entity.member.Member;
+import tasteMap.backend.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
 

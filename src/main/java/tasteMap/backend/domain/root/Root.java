@@ -1,8 +1,8 @@
-package tasteMap.backend.entity.course;
+package tasteMap.backend.domain.root;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tasteMap.backend.entity.member.Member;
+import tasteMap.backend.domain.course.Course;
 
 @Getter
 @Setter
@@ -10,15 +10,15 @@ import tasteMap.backend.entity.member.Member;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Course {
+public class Root {
     @Id
     @GeneratedValue
     private Long id;
     private String title;
     private String content;
+    private String address;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
+    @JoinColumn(name = "course_id")
+    private Course course;
 }
