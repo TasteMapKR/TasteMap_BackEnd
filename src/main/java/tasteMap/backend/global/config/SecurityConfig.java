@@ -11,6 +11,9 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import tasteMap.backend.global.config.security.CustomSuccessHandler;
+import tasteMap.backend.global.config.jwt.JwtFilter;
+import tasteMap.backend.global.config.jwt.JwtUtil;
 import tasteMap.backend.global.oauth2.service.CustomOAuthUserService;
 
 import java.util.Arrays;
@@ -19,9 +22,10 @@ import java.util.Collections;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final JwtUtil jwtUtil;
+    private final CustomSuccessHandler customSuccessHandler;
     private final CustomOAuthUserService customOAuthUserService;
-
+    private final JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -77,6 +81,11 @@ public class SecurityConfig {
         http
             .httpBasic(auth -> auth.disable());
 
+        // JWT 필터 추가
+        // `JwtFilter`를 필터 체인에 추가하여 JWT 토큰 기반 인증을 처리합니다.
+        // `OAuth2LoginAuthenticationFilter` 이후에 위치하여 OAuth2 인증을 먼저 처리한 후 JWT 검증을 수행합니다.
+        http
+            .addFilterAfter(jwtFilter, OAuth2LoginAuthenticationFilter.class);
 
         // OAuth2 로그인 설정
         // OAuth2 인증을 설정합니다. 커스텀 사용자 서비스와 성공 핸들러를 지정합니다.
@@ -84,6 +93,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                     .userService(customOAuthUserService))
+                .successHandler(customSuccessHandler)
             );
 
         // 요청 권한 설정
@@ -103,4 +113,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

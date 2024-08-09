@@ -1,4 +1,4 @@
-package tasteMap.backend.global.jwt;
+package tasteMap.backend.global.config.jwt.refresh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,11 +18,9 @@ public class Refresh {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String username;
 
     private String refresh;
 
-    private LocalDateTime expiration;
+    private String expiration;
 }
