@@ -1,8 +1,8 @@
-package tasteMap.backend.domain.root;
+package tasteMap.backend.domain.root.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tasteMap.backend.domain.course.Course;
+import tasteMap.backend.domain.course.entity.Course;
 
 @Getter
 @Setter

@@ -1,8 +1,12 @@
-package tasteMap.backend.domain.feedback;
+package tasteMap.backend.domain.course.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import tasteMap.backend.domain.member.entity.Member;
+import tasteMap.backend.domain.root.entity.Root;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,19 +14,15 @@ import tasteMap.backend.domain.member.entity.Member;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Feedback {
+public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
-
-    private boolean status;
-
+    private String title;
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "root_id") // 엔티티 대신 ID만 저장
-    private Long rootId;
 }
