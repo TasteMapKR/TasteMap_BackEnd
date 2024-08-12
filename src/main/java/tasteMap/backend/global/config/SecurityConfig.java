@@ -101,7 +101,7 @@ public class SecurityConfig {
         // 나머지 모든 요청은 인증된 사용자만 접근할 수 있도록 설정합니다.
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**", "/reissue").permitAll()
+                .requestMatchers("/login/**", "/refresh").permitAll()
                 .anyRequest().authenticated());
 
         // 세션 관리 설정: STATELESS

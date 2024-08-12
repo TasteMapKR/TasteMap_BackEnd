@@ -2,7 +2,6 @@ package tasteMap.backend.domain.course.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +11,9 @@ import tasteMap.backend.domain.course.entity.Course;
 import tasteMap.backend.domain.course.service.CourseService;
 import tasteMap.backend.domain.root.dto.RootDTO;
 import tasteMap.backend.domain.root.service.RootService;
-import tasteMap.backend.global.config.security.CustomSuccessHandler;
+import tasteMap.backend.global.S3.service.S3UploaderImpl;
 import tasteMap.backend.global.config.security.CustomUserDetails;
+import tasteMap.backend.global.response.ResponseDto;
 
 import java.util.List;
 
@@ -23,9 +23,9 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
     private final RootService rootService;
-
+    private final S3UploaderImpl s3Uploader;
     @PostMapping()
-    public ResponseEntity<String> addCourse(
+    public ResponseEntity<?> addCourse(
         @RequestPart("course") @Valid CourseDTO courseDTO,
         @RequestPart("courseImage") MultipartFile courseImage,
         @RequestPart("roots") List<@Valid RootDTO> roots,
@@ -33,10 +33,35 @@ public class CourseController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Course course = courseService.save(courseDTO,customUserDetails.getUsername());
-        //id를 이용해서 img 저장
+        s3Uploader.uploadCourse(courseImage, course.getId());
 
         rootService.save(roots, course);
-        //순서를 이용해서 img 저장
-        return new ResponseEntity<>("Course added successfully", HttpStatus.OK);
+        s3Uploader.uploadRoot(rootImages, course.getId());
+
+        return ResponseEntity.status(200).body(ResponseDto.of("코스 저장 성공",null));
+    }
+    @PostMapping("/{id}/update")
+    public ResponseEntity<?> updateCourse(@PathVariable Long id,
+                                          @RequestPart("course") @Valid CourseDTO courseDTO,
+                                          @RequestPart("courseImage") MultipartFile courseImage,
+                                          @RequestPart("roots") List<@Valid RootDTO> roots,
+                                          @RequestPart("rootImages") List<MultipartFile> rootImages,
+                                          @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        Course course = courseService.update(id, courseDTO);
+        s3Uploader.uploadCourse(courseImage, course.getId());
+
+        rootService.updateRoots(course.getId(),roots);
+        s3Uploader.uploadRoot(rootImages, course.getId());
+
+        return ResponseEntity.status(200).body(ResponseDto.of("코스 업데이트 성공",null));
+    }
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteCourse(
+        @PathVariable Long id,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails){
+        courseService.delete(id);
+        rootService.deleteRoots(id);
+
+        return ResponseEntity.status(200).body(ResponseDto.of("코스 삭제 성공",null));
     }
 }

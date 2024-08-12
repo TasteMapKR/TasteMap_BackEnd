@@ -28,7 +28,7 @@ public class RefreshController {
     private final MemberRepository memberRepository;
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-
+        log.info("리프레쉬 재발급");
         //쿠키에서 Refresh 토큰 얻기
         String refresh = null;
         Cookie[] cookies = request.getCookies();
