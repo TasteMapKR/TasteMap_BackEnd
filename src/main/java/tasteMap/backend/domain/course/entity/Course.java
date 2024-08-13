@@ -2,6 +2,7 @@ package tasteMap.backend.domain.course.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tasteMap.backend.domain.course.entity.Enum.Category;
 import tasteMap.backend.domain.member.entity.Member;
 import tasteMap.backend.domain.root.entity.Root;
 
@@ -20,7 +21,8 @@ public class Course {
     private Long id;
     private String title;
     private String content;
-
+    @Enumerated(EnumType.STRING)
+    private Category category;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

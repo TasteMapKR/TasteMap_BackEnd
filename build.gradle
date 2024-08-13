@@ -60,6 +60,11 @@ dependencies {
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// Mockito
+	testImplementation 'org.mockito:mockito-core:4.8.1'
+
+	// Spring Boot Test with Mockito
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {

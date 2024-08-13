@@ -1,5 +1,6 @@
 package tasteMap.backend.global.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
 import tasteMap.backend.global.config.security.CustomUserDetails;
+import tasteMap.backend.global.response.ResponseDto;
 
 import java.io.IOException;
 
@@ -29,18 +31,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // AccessToken이 없거나, 만료된 경우
         if (accessToken == null) {
-            filterChain.doFilter(request, response);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Access token is missing.");
             return;
         }
         if (jwtUtil.isExpired(accessToken)) {
-            filterChain.doFilter(request, response);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Access token is expired.");
             return;
         }
 
         // 카테고리가 Access인지 확인
         if (!"access".equals(jwtUtil.getCategory(accessToken))) {
             log.warn("Invalid token category");
-            filterChain.doFilter(request, response);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token category.");
             return;
         }
 
@@ -70,5 +72,24 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 필터 체인을 계속 진행하여 다음 필터나 요청 처리기로 전달
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * 인증 실패 시 상태 전달
+     * @param response
+     * @param status
+     * @param message
+     * @throws IOException
+     */
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // JSON 형식의 오류 응답 생성
+        ResponseDto<String> responseDto = ResponseDto.fail(status, message);
+        ObjectMapper mapper = new ObjectMapper();
+        response.getWriter().write(mapper.writeValueAsString(responseDto));
+        response.getWriter().flush();
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tasteMap.backend.domain.course.dto.CourseDTO;
+import tasteMap.backend.domain.course.dto.request.CourseDTO;
 import tasteMap.backend.domain.course.entity.Course;
 import tasteMap.backend.domain.course.service.CourseService;
 import tasteMap.backend.domain.root.dto.RootDTO;
@@ -24,6 +24,10 @@ public class CourseController {
     private final CourseService courseService;
     private final RootService rootService;
     private final S3UploaderImpl s3Uploader;
+
+    /**
+     * 먹거리 코스를 생성
+     */
     @PostMapping()
     public ResponseEntity<?> addCourse(
         @RequestPart("course") @Valid CourseDTO courseDTO,
@@ -40,6 +44,10 @@ public class CourseController {
 
         return ResponseEntity.status(200).body(ResponseDto.of("코스 저장 성공",null));
     }
+
+    /**
+     * 먹거리 코스를 업데이트
+     */
     @PostMapping("/{id}/update")
     public ResponseEntity<?> updateCourse(@PathVariable Long id,
                                           @RequestPart("course") @Valid CourseDTO courseDTO,
@@ -47,7 +55,7 @@ public class CourseController {
                                           @RequestPart("roots") List<@Valid RootDTO> roots,
                                           @RequestPart("rootImages") List<MultipartFile> rootImages,
                                           @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        Course course = courseService.update(id, courseDTO);
+        Course course = courseService.update(id, courseDTO, customUserDetails.getUsername());
         s3Uploader.uploadCourse(courseImage, course.getId());
 
         rootService.updateRoots(course.getId(),roots);
@@ -55,11 +63,16 @@ public class CourseController {
 
         return ResponseEntity.status(200).body(ResponseDto.of("코스 업데이트 성공",null));
     }
+
+    /**
+     * 먹거리 코스 제거
+     */
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> deleteCourse(
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        courseService.delete(id);
+
+        courseService.delete(id, customUserDetails.getUsername());
         rootService.deleteRoots(id);
 
         return ResponseEntity.status(200).body(ResponseDto.of("코스 삭제 성공",null));

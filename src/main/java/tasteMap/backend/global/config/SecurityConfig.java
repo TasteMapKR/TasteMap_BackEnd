@@ -22,20 +22,19 @@ import java.util.Collections;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtUtil jwtUtil;
-    private final CustomSuccessHandler customSuccessHandler;
-    private final CustomOAuthUserService customOAuthUserService;
-    private final JwtFilter jwtFilter;
+
+    private final JwtUtil jwtUtil; // JWT 유틸리티 클래스
+    private final CustomSuccessHandler customSuccessHandler; // 인증 성공 시 처리할 커스텀 핸들러
+    private final CustomOAuthUserService customOAuthUserService; // OAuth2 사용자 정보 서비스
+    private final JwtFilter jwtFilter; // JWT 필터
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CORS 설정 시작
         http
             .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
                 @Override
                 public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
                     CorsConfiguration configuration = new CorsConfiguration();
 
                     // 허용할 출처(Origin)를 설정합니다.
@@ -93,7 +92,7 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                     .userService(customOAuthUserService))
-                .successHandler(customSuccessHandler)
+                .successHandler(customSuccessHandler) // 커스텀 성공 핸들러 설정
             );
 
         // 요청 권한 설정
@@ -101,8 +100,8 @@ public class SecurityConfig {
         // 나머지 모든 요청은 인증된 사용자만 접근할 수 있도록 설정합니다.
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**", "/refresh").permitAll()
-                .anyRequest().authenticated());
+                .requestMatchers("/login/**", "/refresh", "/**").permitAll() // 로그인 및 리프레시 경로를 인증 없이 접근 허용
+                .anyRequest().authenticated()); // 나머지 모든 요청은 인증된 사용자만 접근 허용
 
         // 세션 관리 설정: STATELESS
         // 세션을 사용하지 않도록 설정하여, JWT와 같은 토큰 기반 인증만 사용하도록 합니다.

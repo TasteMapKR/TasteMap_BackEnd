@@ -9,6 +9,8 @@ import tasteMap.backend.domain.course.repository.CourseRepository;
 import tasteMap.backend.domain.root.dto.RootDTO;
 import tasteMap.backend.domain.root.entity.Root;
 import tasteMap.backend.domain.root.repository.RootRepository;
+import tasteMap.backend.global.exception.AppException;
+import tasteMap.backend.global.exception.errorCode.CourseErrorCode;
 
 import java.util.List;
 import java.util.Map;
@@ -59,7 +61,7 @@ public class RootService {
     public void deleteRoots(Long courseId){
         // Course 조회
         Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
+            .orElseThrow(() -> new AppException(CourseErrorCode.COURSE_NOT_FOUND));
         rootRepository.deleteByCourse(course);
     }
 }

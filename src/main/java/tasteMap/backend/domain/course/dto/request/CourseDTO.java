@@ -1,4 +1,4 @@
-package tasteMap.backend.domain.course.dto;
+package tasteMap.backend.domain.course.dto.request;
 
 
 import jakarta.validation.constraints.NotEmpty;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import tasteMap.backend.domain.root.dto.RootDTO;
 
+import javax.naming.ldap.PagedResultsControl;
 import java.util.List;
 @Getter
 @AllArgsConstructor
@@ -17,6 +18,8 @@ public class CourseDTO {
     private String title;
     @NotEmpty(message = " 코스 내용은 필수 입력 값입니다.")
     private String content;
+    private String category;
     private List<RootDTO> roots;
+
 
 }
