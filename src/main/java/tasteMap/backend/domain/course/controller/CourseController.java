@@ -2,6 +2,7 @@ package tasteMap.backend.domain.course.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -42,13 +43,13 @@ public class CourseController {
         rootService.save(roots, course);
         s3Uploader.uploadRoot(rootImages, course.getId());
 
-        return ResponseEntity.status(200).body(ResponseDto.of("코스 저장 성공",null));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공",null));
     }
 
     /**
      * 먹거리 코스를 업데이트
      */
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable Long id,
                                           @RequestPart("course") @Valid CourseDTO courseDTO,
                                           @RequestPart("courseImage") MultipartFile courseImage,
@@ -61,13 +62,13 @@ public class CourseController {
         rootService.updateRoots(course.getId(),roots);
         s3Uploader.uploadRoot(rootImages, course.getId());
 
-        return ResponseEntity.status(200).body(ResponseDto.of("코스 업데이트 성공",null));
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("코스 업데이트 성공",null));
     }
 
     /**
      * 먹거리 코스 제거
      */
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCourse(
         @PathVariable Long id,
         @AuthenticationPrincipal CustomUserDetails customUserDetails){
@@ -75,6 +76,6 @@ public class CourseController {
         courseService.delete(id, customUserDetails.getUsername());
         rootService.deleteRoots(id);
 
-        return ResponseEntity.status(200).body(ResponseDto.of("코스 삭제 성공",null));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of("코스 삭제 성공",null));
     }
 }

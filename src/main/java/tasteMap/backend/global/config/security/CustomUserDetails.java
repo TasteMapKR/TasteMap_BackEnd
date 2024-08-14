@@ -37,7 +37,7 @@ public class CustomUserDetails implements OAuth2User, UserDetails {
     public String getEmail() {
         return memberDTO.getEmail();
     }
-
+    public MemberDTO getMemberDTO(){return  memberDTO;}
     @Override
     public String getName() {
         return memberDTO.getName();

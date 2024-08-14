@@ -20,4 +20,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
     private String profile_image;
+
+
+    public Member(String username) {
+        this.username= username;
+    }
 }
