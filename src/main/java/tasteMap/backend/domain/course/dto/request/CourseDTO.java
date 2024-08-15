@@ -19,7 +19,4 @@ public class CourseDTO {
     @NotEmpty(message = " 코스 내용은 필수 입력 값입니다.")
     private String content;
     private String category;
-    private List<RootDTO> roots;
-
-
 }

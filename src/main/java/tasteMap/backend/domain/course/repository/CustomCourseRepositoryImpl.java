@@ -32,7 +32,7 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository {
             .select(Projections.constructor(CourseMainPageDTO.class,
                 course.id,
                 course.title,
-                course.category,
+                course.category.stringValue(),
                 member.name,
                 member.profile_image))
             .from(course)

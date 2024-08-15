@@ -32,9 +32,12 @@ public class RefreshController {
         //쿠키에서 Refresh 토큰 얻기
         String refresh = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh")) {
-                refresh = cookie.getValue();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refresh")) {
+                    refresh = cookie.getValue();
+                    break; // 필요한 쿠키를 찾았으면 루프 종료
+                }
             }
         }
 

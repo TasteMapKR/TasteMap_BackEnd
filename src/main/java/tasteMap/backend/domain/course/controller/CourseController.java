@@ -1,5 +1,8 @@
 package tasteMap.backend.domain.course.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,19 +34,22 @@ public class CourseController {
      */
     @PostMapping()
     public ResponseEntity<?> addCourse(
-        @RequestPart("course") @Valid CourseDTO courseDTO,
+        @RequestPart("course") @Valid String courseJson,
         @RequestPart("courseImage") MultipartFile courseImage,
-        @RequestPart("roots") List<@Valid RootDTO> roots,
-        @RequestPart("rootImages") List<MultipartFile> rootImages,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        @RequestPart("roots") String rootsJson,
+        @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
 
-        Course course = courseService.save(courseDTO,customUserDetails.getUsername());
+        CourseDTO courseDTO = new ObjectMapper().readValue(courseJson, CourseDTO.class);
+        List<RootDTO> roots = new ObjectMapper().readValue(rootsJson, new TypeReference<List<RootDTO>>(){});
+
+        Course course = courseService.save(courseDTO, customUserDetails.getUsername());
         s3Uploader.uploadCourse(courseImage, course.getId());
 
         rootService.save(roots, course);
         s3Uploader.uploadRoot(rootImages, course.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공",null));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공", null));
     }
 
     /**

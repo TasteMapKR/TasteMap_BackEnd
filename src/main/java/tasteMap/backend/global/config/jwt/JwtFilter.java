@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
+import tasteMap.backend.global.config.jwt.refresh.controller.RefreshController;
+import tasteMap.backend.global.config.jwt.refresh.service.RefreshService;
 import tasteMap.backend.global.config.security.CustomUserDetails;
 import tasteMap.backend.global.response.ResponseDto;
 
@@ -24,25 +26,24 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = request.getHeader("access");
 
         // AccessToken이 없거나, 만료된 경우
         if (accessToken == null) {
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Access token is missing.");
+            filterChain.doFilter(request, response);
             return;
         }
         if (jwtUtil.isExpired(accessToken)) {
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Access token is expired.");
+            filterChain.doFilter(request, response);
             return;
         }
 
         // 카테고리가 Access인지 확인
         if (!"access".equals(jwtUtil.getCategory(accessToken))) {
             log.warn("Invalid token category");
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token category.");
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -85,7 +86,6 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setStatus(status);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
         // JSON 형식의 오류 응답 생성
         ResponseDto<String> responseDto = ResponseDto.fail(status, message);
         ObjectMapper mapper = new ObjectMapper();
