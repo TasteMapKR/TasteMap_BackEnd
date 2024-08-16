@@ -7,12 +7,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tasteMap.backend.domain.course.dto.response.CourseMainPageDTO;
 import tasteMap.backend.domain.course.dto.response.CourseMyDTO;
+import tasteMap.backend.domain.course.dto.response.CourseDetailDTO;
+import tasteMap.backend.domain.course.dto.response.CourseOverview;
 import tasteMap.backend.domain.course.service.CourseApiService;
 
 import tasteMap.backend.global.config.security.CustomUserDetails;
@@ -38,5 +37,11 @@ public class CourseApiController {
         @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
         Page<CourseMainPageDTO> list = courseApiService.getCoursesByCategory(category, pageable);
         return ResponseEntity.status(200).body(ResponseDto.of("카테고리별 코스 조회 성공", list));
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCourse(
+        @PathVariable Long id){
+        CourseOverview result = courseApiService.getCourseById(id);
+        return ResponseEntity.status(200).body(ResponseDto.of("코스 조회 성공", result));
     }
 }

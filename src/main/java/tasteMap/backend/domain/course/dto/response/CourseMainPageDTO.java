@@ -14,5 +14,4 @@ public class CourseMainPageDTO {
     private String category;
     private String name;
     private String profile_image;
-
 }

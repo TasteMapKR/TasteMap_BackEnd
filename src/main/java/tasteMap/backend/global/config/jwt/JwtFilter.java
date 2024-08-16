@@ -28,6 +28,21 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        // 요청 URL을 가져와서 로깅
+        String requestUri = request.getRequestURI();
+
+        if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String accessToken = request.getHeader("access");
 
         // AccessToken이 없거나, 만료된 경우
@@ -75,21 +90,4 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * 인증 실패 시 상태 전달
-     * @param response
-     * @param status
-     * @param message
-     * @throws IOException
-     */
-    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        // JSON 형식의 오류 응답 생성
-        ResponseDto<String> responseDto = ResponseDto.fail(status, message);
-        ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().write(mapper.writeValueAsString(responseDto));
-        response.getWriter().flush();
-    }
 }

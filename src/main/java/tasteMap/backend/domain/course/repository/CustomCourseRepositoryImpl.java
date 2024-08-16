@@ -1,7 +1,6 @@
 package tasteMap.backend.domain.course.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import tasteMap.backend.domain.course.dto.response.CourseMainPageDTO;
 import tasteMap.backend.domain.course.dto.response.CourseMyDTO;
+import tasteMap.backend.domain.course.dto.response.CourseDetailDTO;
+import tasteMap.backend.domain.course.dto.response.CourseOverview;
 import tasteMap.backend.domain.course.entity.Enum.Category;
 import tasteMap.backend.domain.course.entity.QCourse;
 import tasteMap.backend.domain.member.entity.QMember;
+import tasteMap.backend.domain.root.dto.RootDTO;
+import tasteMap.backend.domain.root.entity.QRoot;
+
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class CustomCourseRepositoryImpl implements CustomCourseRepository {
@@ -74,5 +79,38 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository {
             .fetchOne();
         long totalCount = (total != null) ? total : 0;
         return new PageImpl<>(results, pageable, totalCount);
+    }
+
+    @Override
+    public CourseOverview findCourseById(Long id) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        QCourse course = QCourse.course;
+        QRoot root = QRoot.root;
+        QMember member = QMember.member;
+
+        CourseDetailDTO courseDetailDTO = queryFactory
+            .select(Projections.constructor(CourseDetailDTO.class,
+                course.title,
+                course.category.stringValue(),
+                course.content,
+                member.name,
+                member.profile_image))
+            .from(course)
+            .join(course.member, member)
+            .where(course.id.eq(id))
+            .fetchOne();
+        List<RootDTO> roots = queryFactory
+            .select(Projections.constructor(RootDTO.class,
+                root.title,
+                root.content,
+                root.address))
+            .from(root)
+            .where(root.course.id.eq(id))
+            .fetch();
+
+        return CourseOverview.builder()
+            .course(courseDetailDTO)
+            .roots(roots)
+            .build();
     }
 }

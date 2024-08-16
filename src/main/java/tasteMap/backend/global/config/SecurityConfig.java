@@ -100,7 +100,7 @@ public class SecurityConfig {
         // 나머지 모든 요청은 인증된 사용자만 접근할 수 있도록 설정합니다.
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login/**", "/refresh", "/**").permitAll() // 로그인 및 리프레시 경로를 인증 없이 접근 허용
+                .requestMatchers("/login/oauth2/code/**", "/refresh", "/api/**").permitAll() // 로그인 및 리프레시 경로를 인증 없이 접근 허용
                 .anyRequest().authenticated()); // 나머지 모든 요청은 인증된 사용자만 접근 허용
 
         // 세션 관리 설정: STATELESS

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/course")
 @RequiredArgsConstructor
+@Slf4j
 public class CourseController {
     private final CourseService courseService;
     private final RootService rootService;
@@ -32,16 +34,13 @@ public class CourseController {
     /**
      * 먹거리 코스를 생성
      */
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> addCourse(
-        @RequestPart("course") @Valid String courseJson,
-        @RequestPart("courseImage") MultipartFile courseImage,
-        @RequestPart("roots") String rootsJson,
-        @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws JsonProcessingException {
-
-        CourseDTO courseDTO = new ObjectMapper().readValue(courseJson, CourseDTO.class);
-        List<RootDTO> roots = new ObjectMapper().readValue(rootsJson, new TypeReference<List<RootDTO>>(){});
+        @RequestPart("course") @Valid CourseDTO courseDTO,
+        @RequestPart(value = "courseImage") MultipartFile courseImage,
+        @RequestPart("roots") List<@Valid RootDTO> roots,
+        @RequestPart(value = "rootImages") List<MultipartFile> rootImages,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Course course = courseService.save(courseDTO, customUserDetails.getUsername());
         s3Uploader.uploadCourse(courseImage, course.getId());
@@ -52,24 +51,29 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공", null));
     }
 
+
     /**
      * 먹거리 코스를 업데이트
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable Long id,
                                           @RequestPart("course") @Valid CourseDTO courseDTO,
-                                          @RequestPart("courseImage") MultipartFile courseImage,
+                                          @RequestPart(value = "courseImage", required = false) MultipartFile courseImage,
                                           @RequestPart("roots") List<@Valid RootDTO> roots,
-                                          @RequestPart("rootImages") List<MultipartFile> rootImages,
+                                          @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
                                           @AuthenticationPrincipal CustomUserDetails customUserDetails){
         Course course = courseService.update(id, courseDTO, customUserDetails.getUsername());
-        s3Uploader.uploadCourse(courseImage, course.getId());
+        if(courseImage != null)
+            s3Uploader.uploadCourse(courseImage, course.getId());
 
         rootService.updateRoots(course.getId(),roots);
-        s3Uploader.uploadRoot(rootImages, course.getId());
+        if(rootImages != null)
+            s3Uploader.uploadRoot(rootImages, course.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("코스 업데이트 성공",null));
     }
+
+
 
     /**
      * 먹거리 코스 제거

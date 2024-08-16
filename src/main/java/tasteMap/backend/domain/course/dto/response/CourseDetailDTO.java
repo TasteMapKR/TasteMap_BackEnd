@@ -1,14 +1,18 @@
 package tasteMap.backend.domain.course.dto.response;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class CourseMyDTO {
-    private Long id;
+@NoArgsConstructor
+@Builder
+public class CourseDetailDTO {
     private String title;
+    private String category;
+    private String content;
+    private String name;
+    private String profile_image;
 }
