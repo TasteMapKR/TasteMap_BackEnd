@@ -39,14 +39,16 @@ public class CourseController {
         @RequestPart("course") @Valid CourseDTO courseDTO,
         @RequestPart(value = "courseImage") MultipartFile courseImage,
         @RequestPart("roots") List<@Valid RootDTO> roots,
-        @RequestPart(value = "rootImages") List<MultipartFile> rootImages,
+        @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Course course = courseService.save(courseDTO, customUserDetails.getUsername());
         s3Uploader.uploadCourse(courseImage, course.getId());
 
         rootService.save(roots, course);
-        s3Uploader.uploadRoot(rootImages, course.getId());
+        if (rootImages != null && !rootImages.isEmpty()) {
+            s3Uploader.uploadRoot(rootImages, course.getId());
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공", null));
     }

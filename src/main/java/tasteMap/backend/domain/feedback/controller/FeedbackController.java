@@ -17,42 +17,42 @@ import tasteMap.backend.global.config.security.CustomUserDetails;
 import tasteMap.backend.global.response.ResponseDto;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class FeedbackController {
     private final FeedbackService feedbackService;
 
-    @PostMapping("/{id}/feedback")
+    @PostMapping("/feedback/{id}")
     public ResponseEntity<?> addFeedback(@PathVariable Long id,
-                                         @RequestPart("feedback") @Valid FeedbackDTO feedbackDTO,
+                                         @RequestBody @Valid FeedbackDTO feedbackDTO,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails
                                          ){
         feedbackService.save(feedbackDTO,id, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("평가 생성 성공", feedbackDTO));
     }
 
-    @PutMapping("/{id}/feedback")
+    @PutMapping("/feedback/{id}")
     public ResponseEntity<?> updateFeedback(@PathVariable Long id,
-                                         @RequestPart("feedback") @Valid FeedbackDTO feedbackDTO,
+                                            @RequestBody @Valid FeedbackDTO feedbackDTO,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         feedbackService.update(feedbackDTO,id, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("평가 수정 성공", feedbackDTO));
     }
 
-    @DeleteMapping("/{id}/feedback")
+    @DeleteMapping("/feedback/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Long id,
                                             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         feedbackService.delete(id, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of("평가 제거 성공", null));
     }
-    @GetMapping("/{id}")
+    @GetMapping("/feedback/{id}")
     public ResponseEntity<?> getFeedback(@PathVariable Long id,
                                          @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         FeedbackApiDTO feedbackApiDTO = feedbackService.getFeedback(id, customUserDetails.getUsername(), pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("평가 제거 성공", null));
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("평가 조회 성공", feedbackApiDTO));
     }
 }
