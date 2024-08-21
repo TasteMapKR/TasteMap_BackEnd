@@ -18,6 +18,9 @@ import tasteMap.backend.global.exception.errorCode.AuthErrorCode;
 import tasteMap.backend.global.config.jwt.refresh.service.RefreshService;
 import tasteMap.backend.global.utils.CookieStore;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -79,9 +82,13 @@ public class RefreshController {
 
         //response
         response.setHeader("access", newAccess);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("name", member.getName());
+
         log.info("{}",newAccess);
         response.addCookie(cookieStore.createCookie(newRefresh));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(responseBody);
     }
 
 }
