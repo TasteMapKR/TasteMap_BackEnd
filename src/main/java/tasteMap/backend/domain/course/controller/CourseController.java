@@ -39,7 +39,7 @@ public class CourseController {
         @RequestPart("course") @Valid CourseDTO courseDTO,
         @RequestPart(value = "courseImage") MultipartFile courseImage,
         @RequestPart("roots") List<@Valid RootDTO> roots,
-        @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
+        @RequestPart(value = "rootImages") List<MultipartFile> rootImages,
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Course course = courseService.save(courseDTO, customUserDetails.getUsername());
@@ -47,6 +47,7 @@ public class CourseController {
 
         rootService.save(roots, course);
         if (rootImages != null && !rootImages.isEmpty()) {
+            log.info("{}", rootImages.size());
             s3Uploader.uploadRoot(rootImages, course.getId());
         }
 
@@ -67,7 +68,6 @@ public class CourseController {
         Course course = courseService.update(id, courseDTO, customUserDetails.getUsername());
         if(courseImage != null)
             s3Uploader.uploadCourse(courseImage, course.getId());
-
         rootService.updateRoots(course.getId(),roots);
         if(rootImages != null)
             s3Uploader.uploadRoot(rootImages, course.getId());

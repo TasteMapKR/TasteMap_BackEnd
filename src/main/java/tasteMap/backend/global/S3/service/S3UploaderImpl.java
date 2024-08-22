@@ -50,7 +50,7 @@ public class S3UploaderImpl implements S3Uploader {
             try {
                 ObjectMetadata metadata = new ObjectMetadata();
                 metadata.setContentType(file.getContentType()); // MIME 타입 설정
-
+                metadata.setContentLength(file.getSize()); // 콘텐츠 길이 설정
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata));
                 log.info("파일 업로드 성공: {}", fileName);
                 index++;
@@ -58,25 +58,6 @@ public class S3UploaderImpl implements S3Uploader {
                 log.error("파일 업로드 중 오류 발생: {}", e.getMessage());
                 throw new RuntimeException("파일 업로드 중 오류가 발생했습니다.", e);
             }
-        }
-    }
-    public void deleteCourse(Long courseId) {
-        String key = "course/" + courseId;
-
-        try {
-            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-            log.info("파일 삭제 성공: {}", key);
-        } catch (Exception e) {
-            log.error("파일 삭제 중: {}", e.getMessage());
-        }
-    }
-    public void deleteRoot(Long courseId){
-        String key = "root/" + courseId;
-        try {
-            amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-            log.info("파일 삭제 성공: {}", key);
-        } catch (Exception e) {
-            log.error("파일 삭제 중: {}", e.getMessage());
         }
     }
 }

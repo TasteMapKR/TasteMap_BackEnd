@@ -17,7 +17,7 @@ import tasteMap.backend.global.config.security.CustomUserDetails;
 import tasteMap.backend.global.response.ResponseDto;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 @RequiredArgsConstructor
 public class FeedbackController {
     private final FeedbackService feedbackService;
@@ -47,12 +47,18 @@ public class FeedbackController {
         feedbackService.delete(id, customUserDetails.getUsername());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of("평가 제거 성공", null));
     }
-    @GetMapping("/feedback/{id}")
+    @GetMapping("/api/feedback/{id}")
     public ResponseEntity<?> getFeedback(@PathVariable Long id,
                                          @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                          @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        FeedbackApiDTO feedbackApiDTO = feedbackService.getFeedback(id, customUserDetails.getUsername(), pageable);
+        FeedbackApiDTO feedbackApiDTO;
+        if(customUserDetails == null){
+            feedbackApiDTO = feedbackService.getFeedback(id, pageable);
+        }
+        else {
+            feedbackApiDTO = feedbackService.getAuFeedback(id, customUserDetails.getUsername(), pageable);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("평가 조회 성공", feedbackApiDTO));
     }
 }

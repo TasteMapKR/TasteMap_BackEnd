@@ -9,7 +9,6 @@ public interface S3Uploader {
 
     void uploadCourse(MultipartFile file, Long id);
     void uploadRoot(List<MultipartFile> files, Long id);
-    void deleteCourse(Long courseId);
-    void deleteRoot(Long courseId);
+
 
 }
