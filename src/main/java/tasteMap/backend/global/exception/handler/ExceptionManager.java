@@ -67,5 +67,11 @@ public class ExceptionManager {
         );
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(response);
     }
-
+    @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+        // 로그를 남기거나 다른 처리 로직을 추가할 수 있습니다.
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body("JWT Token has expired");
+    }
 }
