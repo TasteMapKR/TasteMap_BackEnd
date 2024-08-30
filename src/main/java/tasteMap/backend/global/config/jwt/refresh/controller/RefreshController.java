@@ -85,8 +85,8 @@ public class RefreshController {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("name", member.getName());
+        responseBody.put("profile", member.getProfile_image());
 
-        log.info("{}",newAccess);
         response.addCookie(cookieStore.createCookie(newRefresh));
         return ResponseEntity.ok(responseBody);
     }

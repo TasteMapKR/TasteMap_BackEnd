@@ -38,6 +38,12 @@ public class CourseApiController {
         Page<CourseMainPageDTO> list = courseApiService.getCoursesByCategory(category, pageable);
         return ResponseEntity.status(200).body(ResponseDto.of("카테고리별 코스 조회 성공", list));
     }
+    @GetMapping
+    public ResponseEntity<?> courses(
+        @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<CourseMainPageDTO> list = courseApiService.getCourses(pageable);
+        return ResponseEntity.status(200).body(ResponseDto.of("전체 코스 조회 성공", list));
+    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getCourse(
         @PathVariable Long id){

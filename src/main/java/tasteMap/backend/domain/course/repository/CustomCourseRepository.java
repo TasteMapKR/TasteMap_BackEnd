@@ -10,6 +10,6 @@ import tasteMap.backend.domain.course.dto.response.CourseOverview;
 public interface CustomCourseRepository {
     Page<CourseMainPageDTO> findCourseMainPageByCategory(String category, Pageable pageable);
     Page<CourseMyDTO> findCoursesByMemberId(Long memberId, Pageable pageable);
-
+    Page<CourseMainPageDTO> findCourseMainPage(Pageable pageable);
     CourseOverview findCourseById(Long id);
 }

@@ -152,7 +152,7 @@ public class FeedbackServiceTest {
         when(feedbackRepository.findFeedbackDTOByRootID(rootId, pageable)).thenReturn(feedbackPage);
 
         // Act
-        FeedbackApiDTO result = feedbackService.getFeedback(rootId, username, pageable);
+        FeedbackApiDTO result = feedbackService.getAuFeedback(rootId, username, pageable);
 
         // Assert
         assertEquals(10, result.getPositive());

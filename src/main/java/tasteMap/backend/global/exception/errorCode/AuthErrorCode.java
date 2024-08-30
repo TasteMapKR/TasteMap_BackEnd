@@ -2,7 +2,11 @@ package tasteMap.backend.global.exception.errorCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @AllArgsConstructor
 @Getter
@@ -15,3 +19,4 @@ public enum AuthErrorCode implements ErrorCode{
     private HttpStatus httpStatus;
     private String message;
 }
+

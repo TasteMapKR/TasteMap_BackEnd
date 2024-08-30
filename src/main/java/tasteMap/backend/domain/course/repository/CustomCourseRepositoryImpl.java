@@ -26,7 +26,33 @@ public class CustomCourseRepositoryImpl implements CustomCourseRepository {
 
     @Autowired
     private EntityManager em;
+    @Override
+    public Page<CourseMainPageDTO> findCourseMainPage(Pageable pageable) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        QCourse course = QCourse.course;
+        QMember member = QMember.member;
 
+        List<CourseMainPageDTO> results = queryFactory
+            .select(Projections.constructor(CourseMainPageDTO.class,
+                course.id,
+                course.title,
+                course.category.stringValue(),
+                member.name,
+                member.profile_image))
+            .from(course)
+            .join(course.member, member)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        Long total = queryFactory
+            .select(course.count()).
+            from(course)
+            .fetchOne();
+        long totalCount = (total != null) ? total : 0;
+
+        return new PageImpl<>(results, pageable, totalCount);
+    }
     @Override
     public Page<CourseMainPageDTO> findCourseMainPageByCategory(String category, Pageable pageable) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);

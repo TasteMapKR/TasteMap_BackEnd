@@ -33,12 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI();
 
         if (requestUri.matches("^\\/login(?:\\/.*)?$")) {
-
             filterChain.doFilter(request, response);
             return;
         }
         if (requestUri.matches("^\\/oauth2(?:\\/.*)?$")) {
-
             filterChain.doFilter(request, response);
             return;
         }

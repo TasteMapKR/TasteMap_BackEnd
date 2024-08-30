@@ -45,6 +45,12 @@ public class CourseApiService {
     }
 
     /**
+     * 전체 조회
+     */
+    public Page<CourseMainPageDTO> getCourses(Pageable pageable) {
+        return courseRepository.findCourseMainPage(pageable);
+    }
+    /**
      * 특정 코스 조회
      */
     public CourseOverview getCourseById(Long id){

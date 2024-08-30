@@ -57,7 +57,7 @@ public class CourseServiceTest {
             .member(member)
             .build();
 
-        courseDTO = new CourseDTO("Updated Course", "Updated Content", "MIXED", null);
+        courseDTO = new CourseDTO("Updated Course", "Updated Content", "MIXED");
     }
 
     @Test
