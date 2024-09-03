@@ -1,38 +1,37 @@
-name: CI/CD
+name: CI/CD  
 
 on:
   push:
     branches:
-      - main
+      - main  # main 브랜치에 푸시될 때 이 워크플로우가 트리거됩니다.
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
     permissions:
-      contents: read
+      contents: read 
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4  
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v4  
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        java-version: '17' 
+        distribution: 'temurin' 
 
     - name: Create application.yml from secret
       run: |
         # Ensure the directory exists
-        mkdir -p ./src/main/resources
+        mkdir -p ./src/main/resources  
 
         # Decode the APPLICATION secret from base64 and write to application.yml
-        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.yml
-      shell: bash
+        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.yml  
+      shell: bash  
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
-
-
-    - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      run: ./gradlew build  
