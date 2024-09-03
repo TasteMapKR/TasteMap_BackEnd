@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,12 +23,16 @@ jobs:
 
     - name: Create application.yml from secret
       run: |
+        # Ensure the directory exists
+        mkdir -p ./src/main/resources
+
         # Decode the APPLICATION secret from base64 and write to application.yml
         echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.yml
       shell: bash
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
+
 
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
