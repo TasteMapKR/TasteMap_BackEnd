@@ -1,0 +1,35 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Create application.yml from secret
+      run: |
+        # Decode the APPLICATION secret from base64 and write to application.yml
+        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.yml
+      shell: bash
+
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build
+
+    - name: Generate and submit dependency graph
+      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
