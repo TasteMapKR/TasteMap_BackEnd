@@ -8,7 +8,7 @@ on:
 env:
   DOCKER_IMAGE_NAME: quddaz/myapp
   EC2_HOST: 3.36.98.16
-  EC2_SSH_USER: ec2-user
+  EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
   CONTAINER_NAME: my-app-container
 
