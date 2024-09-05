@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE_NAME: mydockerhubuser/myapp
+  DOCKER_IMAGE_NAME: quddaz/myapp
   EC2_HOST: 3.36.98.16
   EC2_SSH_USER: ec2-user
   PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
