@@ -31,6 +31,9 @@ jobs:
         mkdir -p ./src/main/resources
         echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.properties
 
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
     - name: Build with Gradle
       run: ./gradlew build
 
