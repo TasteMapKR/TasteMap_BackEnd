@@ -10,7 +10,7 @@ env:
   EC2_HOST: 3.36.98.16
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-  CONTAINER_NAME: my-app-container
+  COMPOSE_FILE: docker-compose.yml
 
 jobs:
   build-and-push-docker:
@@ -53,10 +53,16 @@ jobs:
         username: ${{ env.EC2_SSH_USER }}
         key: ${{ env.PRIVATE_KEY }}
         script: |
-          CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
-          if [ ! -z "$CONTAINER_ID" ]; then
-            sudo docker stop $CONTAINER_ID
-            sudo docker rm $CONTAINER_ID
+          # Install Docker Compose if not already installed
+          if ! command -v docker-compose &> /dev/null
+          then
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
           fi
-          sudo docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
-          sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:latest
+          
+          # Stop and remove existing containers
+          sudo docker-compose -f ${{ env.COMPOSE_FILE }} down
+
+          # Pull new images and restart containers
+          sudo docker-compose -f ${{ env.COMPOSE_FILE }} pull
+          sudo docker-compose -f ${{ env.COMPOSE_FILE }} up -d
