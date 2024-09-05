@@ -72,7 +72,7 @@ jobs:
           fi
 
           # Move docker-compose.yml to the correct location
-          mv docker-compose.yml /home/ubuntu/
+          sudo mv docker-compose.yml /home/ubuntu/
 
           # Stop and remove existing containers
           sudo docker-compose -f /home/ubuntu/docker-compose.yml down
