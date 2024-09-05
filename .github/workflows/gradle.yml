@@ -1,48 +1,66 @@
-name: CI/CD
+name: Deploy to AWS EC2 using Docker
 
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때 이 워크플로우가 트리거됩니다.
+      - main
+
+env:
+  DOCKER_IMAGE_NAME: mydockerhubuser/myapp
+  EC2_HOST: 3.36.98.16
+  EC2_SSH_USER: ec2-user
+  PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+  CONTAINER_NAME: my-app-container
 
 jobs:
-  build:
-    runs-on: ubuntu-latest 
-    permissions:
-      contents: read  # 리포지토리의 내용을 읽을 수 있는 권한을 부여합니다.
+  build-and-push-docker:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4  # 리포지토리의 코드를 체크아웃합니다.
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v4  # JDK 17을 설정합니다.
+      uses: actions/setup-java@v3
       with:
-        java-version: '17'  # 사용할 JDK 버전을 설정합니다.
-        distribution: 'temurin'  # AdoptOpenJDK의 Temurin 배포판을 사용합니다.
+        java-version: '17'
+        distribution: 'temurin'
 
-    - name: Gradle Caching
-      uses: actions/cache@v3  # Gradle 캐싱을 설정합니다.
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}  # 캐시 키를 설정합니다.
-        restore-keys: |
-          ${{ runner.os }}-gradle-  # 캐시 복원 키를 설정합니다.
-
-    - name: Create application.yml from secret
+    - name: Set up application.properties from Base64 secret
       run: |
-        mkdir -p ./src/main/resources  # 필요한 디렉토리를 생성합니다.
-        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.yml  # 시크릿을 디코딩하여 파일로 저장합니다.
-      shell: bash  # bash 쉘에서 스크립트를 실행합니다.
+        mkdir -p ./src/main/resources
+        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.properties
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew  # gradlew 파일에 실행 권한을 부여합니다.
+    - name: Build with Gradle
+      run: ./gradlew build
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build  # Gradle Wrapper를 사용하여 프로젝트를 빌드합니다.
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
 
+    - name: Login to Docker Hub using Access Token
+      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Build with Gradle Wrapper
-      run: ./gradlew build  
+    - name: Push the Docker image
+      run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
+
+  deploy-to-ec2:
+    needs: build-and-push-docker
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.EC2_HOST }}
+        username: ${{ env.EC2_SSH_USER }}
+        key: ${{ env.PRIVATE_KEY }}
+        script: |
+          CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
+
+          if [ ! -z "$CONTAINER_ID" ]; then
+            sudo docker stop $CONTAINER_ID
+            sudo docker rm $CONTAINER_ID
+          fi
+
+          sudo docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
+          sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}:latest
