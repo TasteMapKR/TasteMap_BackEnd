@@ -26,19 +26,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Set up application.properties from Base64 secret
-      run: |
-        mkdir -p ./src/main/resources
-        echo "${{ secrets.APPLICATION }}" | base64 --decode > ./src/main/resources/application.properties
-
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-
     - name: Build with Gradle
       run: ./gradlew build
 
     - name: Build the Docker image
-      run: docker build src/main/resources --file src/main/resources/Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
+      run: docker build . --file Dockerfile --tag ${{ env.DOCKER_IMAGE_NAME }}:latest
 
     - name: Login to Docker Hub using Access Token
       run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
