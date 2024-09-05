@@ -10,7 +10,7 @@ env:
   EC2_HOST: 3.36.98.16
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-  COMPOSE_FILE: docker-compose.yml
+  COMPOSE_FILE_URL: https://raw.githubusercontent.com/TasteMapKR/TasteMap_BackEnd/main/docker-compose.yml
 
 jobs:
   build-and-push-docker:
@@ -41,22 +41,11 @@ jobs:
     - name: Push the Docker image
       run: docker push ${{ env.DOCKER_IMAGE_NAME }}:latest
 
-    - name: Upload docker-compose.yml
-      uses: actions/upload-artifact@v3
-      with:
-        name: docker-compose
-        path: docker-compose.yml
-
   deploy-to-ec2:
     needs: build-and-push-docker
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download docker-compose.yml
-      uses: actions/download-artifact@v3
-      with:
-        name: docker-compose
-
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
@@ -70,13 +59,10 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           fi
-
-          # Move docker-compose.yml to the correct location
-          sudo mv docker-compose.yml /home/ubuntu/
-
+          # Download docker-compose.yml
+          curl -o /home/ubuntu/docker-compose.yml ${{ env.COMPOSE_FILE_URL }}
           # Stop and remove existing containers
           sudo docker-compose -f /home/ubuntu/docker-compose.yml down
-
           # Pull new images and restart containers
           sudo docker-compose -f /home/ubuntu/docker-compose.yml pull
           sudo docker-compose -f /home/ubuntu/docker-compose.yml up -d
