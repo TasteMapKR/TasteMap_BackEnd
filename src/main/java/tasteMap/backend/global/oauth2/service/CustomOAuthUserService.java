@@ -25,8 +25,8 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
-        OAuth2User oAuth2User = super.loadUser(userRequest); // OAuth2 사용자 정보를 가져옴
-        System.out.println(oAuth2User.getAttributes()); // 디버깅을 위한 출력
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+        System.out.println(oAuth2User.getAttributes());
 
         // OAuth2Response를 제공업체에 따라 추출
         OAuth2Response oAuth2Response = getOAuth2Response(userRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());

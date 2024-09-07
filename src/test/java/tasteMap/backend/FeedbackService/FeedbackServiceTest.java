@@ -45,7 +45,6 @@ public class FeedbackServiceTest {
 
     @Test
     public void testSaveFeedback_Success() {
-        // Arrange
         FeedbackDTO feedbackDTO = new FeedbackDTO(true,"content");
         Long rootId = 1L;
         String username = "user1";
@@ -54,16 +53,13 @@ public class FeedbackServiceTest {
         when(memberRepository.findByUsername(username)).thenReturn(member);
         when(feedbackRepository.existsByRootIdAndMember(rootId, member)).thenReturn(false);
 
-        // Act
         feedbackService.save(feedbackDTO, rootId, username);
 
-        // Assert
         verify(feedbackRepository).save(any(Feedback.class));
     }
 
     @Test
     public void testSaveFeedback_AlreadyExists() {
-        // Arrange
         FeedbackDTO feedbackDTO = new FeedbackDTO(true,"content");
         Long rootId = 1L;
         String username = "user1";
@@ -72,13 +68,11 @@ public class FeedbackServiceTest {
         when(memberRepository.findByUsername(username)).thenReturn(member);
         when(feedbackRepository.existsByRootIdAndMember(rootId, member)).thenReturn(true);
 
-        // Act & Assert
         assertThrows(AppException.class, () -> feedbackService.save(feedbackDTO, rootId, username));
     }
 
     @Test
     public void testUpdateFeedback_Success() {
-        // Arrange
         FeedbackDTO feedbackDTO = new FeedbackDTO(false,"new content");
         Long rootId = 1L;
         String username = "user1";
@@ -93,10 +87,8 @@ public class FeedbackServiceTest {
         when(memberRepository.findByUsername(username)).thenReturn(member);
         when(feedbackRepository.findByRootIdAndMember(rootId, member)).thenReturn(Optional.of(existingFeedback));
 
-        // Act
         feedbackService.update(feedbackDTO, rootId, username);
 
-        // Assert
         verify(feedbackRepository).save(existingFeedback);
         assertEquals("new content", existingFeedback.getContent());
         assertFalse(existingFeedback.isStatus());
@@ -104,7 +96,6 @@ public class FeedbackServiceTest {
 
     @Test
     public void testUpdateFeedback_NotFound() {
-        // Arrange
         FeedbackDTO feedbackDTO = new FeedbackDTO( true,"content");
         Long rootId = 1L;
         String username = "user1";
@@ -113,30 +104,24 @@ public class FeedbackServiceTest {
         when(memberRepository.findByUsername(username)).thenReturn(member);
         when(feedbackRepository.findByRootIdAndMember(rootId, member)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(AppException.class, () -> feedbackService.update(feedbackDTO, rootId, username));
     }
 
     @Test
     public void testDeleteFeedback_Success() {
-        // Arrange
         Long rootId = 1L;
         String username = "user1";
         Member member = new Member(username);
 
-        // Mocking
         when(memberRepository.findByUsername(username)).thenReturn(member);
         doNothing().when(feedbackRepository).deleteByIdAndMember(rootId, member);
 
-        // Act
         feedbackService.delete(rootId, username);
 
-        // Assert
         verify(feedbackRepository).deleteByIdAndMember(rootId, member);
     }
     @Test
     public void testGetFeedback() {
-        // Arrange
         Long rootId = 1L;
         String username = "user1";
         Pageable pageable = Pageable.unpaged();
@@ -151,10 +136,8 @@ public class FeedbackServiceTest {
         when(feedbackRepository.findMyFeedback(rootId, member)).thenReturn(myFeedback);
         when(feedbackRepository.findFeedbackDTOByRootID(rootId, pageable)).thenReturn(feedbackPage);
 
-        // Act
         FeedbackApiDTO result = feedbackService.getAuFeedback(rootId, username, pageable);
 
-        // Assert
         assertEquals(10, result.getPositive());
         assertEquals(5, result.getNegative());
         assertEquals(myFeedback, result.getMyFeedbackResponseDTO());

@@ -45,7 +45,6 @@ public class CourseApiServiceTest {
 
     @Test
     void testGetCoursesByMemberId() {
-        // Given
         Member member = new Member(1L, "testuser", "John Doe", "john@example.com", Role.ROLE_USER, "profile.jpg");
         Course course = new Course(1L, "Sample Course", "Course Content", Category.DESSERT, member);
         CourseMyDTO courseMyDTO = new CourseMyDTO(course.getId(), course.getTitle());
@@ -55,17 +54,14 @@ public class CourseApiServiceTest {
         when(memberRepository.findByUsername(anyString())).thenReturn(member);
         when(courseRepository.findCoursesByMemberId(anyLong(), any(Pageable.class))).thenReturn(page);
 
-        // When
         Page<CourseMyDTO> result = courseApiService.getCoursesByMemberId("testuser", pageable);
 
-        // Then
         assertEquals(1, result.getTotalElements());
         assertEquals("Sample Course", result.getContent().get(0).getTitle());
     }
 
     @Test
     void testGetCoursesByCategory() {
-        // Given
         Member member = new Member(1L, "testuser", "John Doe", "john@example.com", Role.ROLE_USER, "profile.jpg");
         Course course = new Course(1L, "Sample Course", "Course Content", Category.DESSERT, member);
         CourseMainPageDTO courseMainPageDTO = new CourseMainPageDTO(course.getId(), course.getTitle(), "DESERT", member.getName(), member.getProfile_image());
@@ -74,10 +70,8 @@ public class CourseApiServiceTest {
 
         when(courseRepository.findCourseMainPageByCategory(anyString(), any(Pageable.class))).thenReturn(page);
 
-        // When
         Page<CourseMainPageDTO> result = courseApiService.getCoursesByCategory("DESERT", pageable);
 
-        // Then
         assertEquals(1, result.getTotalElements());
         assertEquals("Sample Course", result.getContent().get(0).getTitle());
         assertEquals("DESERT", result.getContent().get(0).getCategory());

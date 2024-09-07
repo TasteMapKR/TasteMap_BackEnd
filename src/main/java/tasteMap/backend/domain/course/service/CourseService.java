@@ -44,9 +44,9 @@ public class CourseService {
 
         // 해당 Course가 현재 사용자에 의해 소유되고 있는지 확인
         if (course.getMember().equals(member)) {
-            courseRepository.deleteById(courseId);  // Course 삭제
+            courseRepository.deleteById(courseId);
         } else {
-            throw new AppException(CourseErrorCode.UNAUTHORIZED_ACCESS);  // 권한이 없을 때 예외 발생
+            throw new AppException(CourseErrorCode.UNAUTHORIZED_ACCESS);
         }
     }
     @Transactional
@@ -63,13 +63,12 @@ public class CourseService {
 
         // 해당 Course가 현재 사용자에 의해 소유되고 있는지 확인
         if (course.getMember().equals(member)) {
-            // Course 객체의 속성을 업데이트
             course.setTitle(courseDTO.getTitle());
             course.setContent(courseDTO.getContent());
             course.setCategory(Category.valueOf(courseDTO.getCategory().toUpperCase()));
             return courseRepository.save(course);
         } else {
-            throw new AppException(CourseErrorCode.UNAUTHORIZED_ACCESS);  // 권한이 없을 때 예외 발생
+            throw new AppException(CourseErrorCode.UNAUTHORIZED_ACCESS);
         }
     }
 }

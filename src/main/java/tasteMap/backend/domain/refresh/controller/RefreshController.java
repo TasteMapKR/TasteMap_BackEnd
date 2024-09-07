@@ -1,4 +1,4 @@
-package tasteMap.backend.global.config.jwt.refresh.controller;
+package tasteMap.backend.domain.refresh.controller;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +14,7 @@ import tasteMap.backend.domain.member.repository.MemberRepository;
 import tasteMap.backend.global.config.jwt.JwtUtil;
 import tasteMap.backend.global.exception.AppException;
 import tasteMap.backend.global.exception.errorCode.AuthErrorCode;
-import tasteMap.backend.global.config.jwt.refresh.service.RefreshService;
+import tasteMap.backend.domain.refresh.service.RefreshService;
 import tasteMap.backend.global.utils.CookieStore;
 
 import java.util.HashMap;

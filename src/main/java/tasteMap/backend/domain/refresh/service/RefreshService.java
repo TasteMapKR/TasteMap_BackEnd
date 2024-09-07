@@ -1,10 +1,10 @@
-package tasteMap.backend.global.config.jwt.refresh.service;
+package tasteMap.backend.domain.refresh.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tasteMap.backend.global.config.jwt.refresh.entity.Refresh;
-import tasteMap.backend.global.config.jwt.refresh.repository.RefreshRepository;
+import tasteMap.backend.domain.refresh.entity.Refresh;
+import tasteMap.backend.domain.refresh.repository.RefreshRepository;
 
 import java.util.Date;
 

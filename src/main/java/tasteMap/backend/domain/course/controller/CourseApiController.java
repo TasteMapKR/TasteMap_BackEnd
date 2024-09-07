@@ -23,14 +23,20 @@ import tasteMap.backend.global.response.ResponseDto;
 public class CourseApiController {
     private final CourseApiService courseApiService;
 
+    /**
+     *  MyPage 나의 코스 조회
+     */
     @GetMapping("/my")
-    public ResponseEntity<ResponseDto<Page<CourseMyDTO>>> myCourse(
+    public ResponseEntity<?> myCourse(
         @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Page<CourseMyDTO> list = courseApiService.getCoursesByMemberId(customUserDetails.getUsername(), pageable);
         return ResponseEntity.status(200).body(ResponseDto.of("나의 코스 조회 성공", list));
     }
+    /**
+     *  MainPage 카테고리별 코스 조회
+     */
     @GetMapping("/category")
     public ResponseEntity<?> coursesByCategory(
         @RequestParam String category,
@@ -38,12 +44,18 @@ public class CourseApiController {
         Page<CourseMainPageDTO> list = courseApiService.getCoursesByCategory(category, pageable);
         return ResponseEntity.status(200).body(ResponseDto.of("카테고리별 코스 조회 성공", list));
     }
+    /**
+     *  MainPage 전체 코스 조회
+     */
     @GetMapping
     public ResponseEntity<?> courses(
         @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
         Page<CourseMainPageDTO> list = courseApiService.getCourses(pageable);
         return ResponseEntity.status(200).body(ResponseDto.of("전체 코스 조회 성공", list));
     }
+    /**
+     *  DetailPage 특정 코스 조회
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getCourse(
         @PathVariable Long id){

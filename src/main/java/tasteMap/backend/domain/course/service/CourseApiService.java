@@ -25,7 +25,7 @@ public class CourseApiService {
     private final MemberRepository memberRepository;
 
     /**
-     * MyPage용 페이징 나의 코스 찾기
+     * MyPage 페이징 나의 코스 찾기
      */
     public Page<CourseMyDTO> getCoursesByMemberId(String username, Pageable pageable) {
         // 사용자 이름으로 멤버 찾기

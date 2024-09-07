@@ -1,4 +1,4 @@
-package tasteMap.backend.global.config.jwt.refresh.entity;
+package tasteMap.backend.domain.refresh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

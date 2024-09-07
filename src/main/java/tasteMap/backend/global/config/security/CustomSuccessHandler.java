@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import tasteMap.backend.global.config.jwt.JwtUtil;
-import tasteMap.backend.global.config.jwt.refresh.service.RefreshService;
+import tasteMap.backend.domain.refresh.service.RefreshService;
 import tasteMap.backend.global.utils.CookieStore;
 import java.io.IOException;
 

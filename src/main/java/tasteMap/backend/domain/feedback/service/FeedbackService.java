@@ -57,7 +57,6 @@ public class FeedbackService {
         feedbackRepository.deleteByIdAndMember(id, member);
     }
     public FeedbackApiDTO getAuFeedback(Long id, String username, Pageable pageable) {
-        // 집계된 피드백 수를 가져오는 최적화된 쿼리
         FeedbackCountsDto feedbackCounts = feedbackRepository.countFeedbacksByRootId(id);
         long positive = feedbackCounts.getPositiveCount();
         long negative = feedbackCounts.getNegativeCount();
@@ -71,7 +70,6 @@ public class FeedbackService {
         return new FeedbackApiDTO(positive, negative, myFeedback, feedbackResponseDTOPage);
     }
     public FeedbackApiDTO getFeedback(Long id, Pageable pageable) {
-        // 집계된 피드백 수를 가져오는 최적화된 쿼리
         FeedbackCountsDto feedbackCounts = feedbackRepository.countFeedbacksByRootId(id);
         long positive = feedbackCounts.getPositiveCount();
         long negative = feedbackCounts.getNegativeCount();

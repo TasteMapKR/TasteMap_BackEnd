@@ -1,6 +1,5 @@
 package tasteMap.backend.global.config.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,10 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
-import tasteMap.backend.global.config.jwt.refresh.controller.RefreshController;
-import tasteMap.backend.global.config.jwt.refresh.service.RefreshService;
 import tasteMap.backend.global.config.security.CustomUserDetails;
-import tasteMap.backend.global.response.ResponseDto;
 
 import java.io.IOException;
 
@@ -84,7 +80,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         log.info("User authenticated: {}", memberDTO.getUsername());
 
-        // 필터 체인을 계속 진행하여 다음 필터나 요청 처리기로 전달
         filterChain.doFilter(request, response);
     }
 
