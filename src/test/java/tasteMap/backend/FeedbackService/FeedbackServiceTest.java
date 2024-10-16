@@ -50,7 +50,7 @@ public class FeedbackServiceTest {
         String username = "user1";
 
         Member member = new Member(username);
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         when(feedbackRepository.existsByRootIdAndMember(rootId, member)).thenReturn(false);
 
         feedbackService.save(feedbackDTO, rootId, username);
@@ -65,7 +65,7 @@ public class FeedbackServiceTest {
         String username = "user1";
 
         Member member = new Member(username);
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         when(feedbackRepository.existsByRootIdAndMember(rootId, member)).thenReturn(true);
 
         assertThrows(AppException.class, () -> feedbackService.save(feedbackDTO, rootId, username));
@@ -84,7 +84,7 @@ public class FeedbackServiceTest {
             .member(member)
             .status(true)
             .build();
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         when(feedbackRepository.findByRootIdAndMember(rootId, member)).thenReturn(Optional.of(existingFeedback));
 
         feedbackService.update(feedbackDTO, rootId, username);
@@ -101,7 +101,7 @@ public class FeedbackServiceTest {
         String username = "user1";
 
         Member member = new Member(username);
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         when(feedbackRepository.findByRootIdAndMember(rootId, member)).thenReturn(Optional.empty());
 
         assertThrows(AppException.class, () -> feedbackService.update(feedbackDTO, rootId, username));
@@ -113,7 +113,7 @@ public class FeedbackServiceTest {
         String username = "user1";
         Member member = new Member(username);
 
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         doNothing().when(feedbackRepository).deleteByIdAndMember(rootId, member);
 
         feedbackService.delete(rootId, username);
@@ -131,7 +131,7 @@ public class FeedbackServiceTest {
         FeedbackResponseDTO myFeedback = new FeedbackResponseDTO(true, "my feedback", "name", "profile_image");
         Page<FeedbackResponseDTO> feedbackPage = new PageImpl<>(List.of(myFeedback));
 
-        when(memberRepository.findByUsername(username)).thenReturn(member);
+        when(memberRepository.findByUsername(username)).thenReturn(Optional.of(member));
         when(feedbackRepository.countFeedbacksByRootId(rootId)).thenReturn(feedbackCounts);
         when(feedbackRepository.findMyFeedback(rootId, member)).thenReturn(myFeedback);
         when(feedbackRepository.findFeedbackDTOByRootID(rootId, pageable)).thenReturn(feedbackPage);

@@ -15,6 +15,7 @@ import tasteMap.backend.domain.member.entity.Member;
 import tasteMap.backend.domain.member.repository.MemberRepository;
 import tasteMap.backend.global.exception.AppException;
 import tasteMap.backend.global.exception.errorCode.FeedbackErrorCode;
+import tasteMap.backend.global.exception.errorCode.MemberErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,8 @@ public class FeedbackService {
     private final MemberRepository memberRepository;
     @Transactional
     public void save(FeedbackDTO feedbackDTO, Long id, String username){
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         if(feedbackRepository.existsByRootIdAndMember(id, member)){
             throw new AppException(FeedbackErrorCode.ALREADY_EXISTS);
@@ -41,7 +43,8 @@ public class FeedbackService {
     }
     @Transactional
     public void update(FeedbackDTO feedbackDTO, Long id, String username) {
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Feedback existingFeedback = feedbackRepository.findByRootIdAndMember(id, member)
             .orElseThrow(() -> new AppException(FeedbackErrorCode.NOT_FOUND));
@@ -53,7 +56,8 @@ public class FeedbackService {
     }
     @Transactional
     public void delete(Long id, String username){
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
         feedbackRepository.deleteByIdAndMember(id, member);
     }
     public FeedbackApiDTO getAuFeedback(Long id, String username, Pageable pageable) {
@@ -62,7 +66,8 @@ public class FeedbackService {
         long negative = feedbackCounts.getNegativeCount();
 
         // 사용자를 찾고, 그에 대한 피드백과 페이지네이션된 피드백 목록을 가져옴
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         FeedbackResponseDTO myFeedback = feedbackRepository.findMyFeedback(id, member);
         Page<FeedbackResponseDTO> feedbackResponseDTOPage = feedbackRepository.findFeedbackDTOByRootID(id, pageable);

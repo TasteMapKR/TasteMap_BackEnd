@@ -1,14 +1,15 @@
 package tasteMap.backend.domain.refresh.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.stereotype.Repository;
 import tasteMap.backend.domain.refresh.entity.Refresh;
 
 @Repository
-public interface RefreshRepository extends JpaRepository<Refresh, Long> {
+public interface RefreshRepository extends KeyValueRepository<Refresh, Long> {
 
-    Boolean existsByRefresh(String refresh);
+    Boolean existsByToken(String refresh);
     Boolean existsByUsername(String username);
-    void deleteByRefresh(String refresh);
+    void deleteByToken(String refresh);
     void deleteByUsername(String username);
 }

@@ -12,6 +12,8 @@ import tasteMap.backend.domain.member.entity.Member;
 import tasteMap.backend.domain.member.entity.dto.MemberDTO;
 import tasteMap.backend.domain.member.repository.MemberRepository;
 import tasteMap.backend.global.config.security.CustomUserDetails;
+import tasteMap.backend.global.exception.AppException;
+import tasteMap.backend.global.exception.errorCode.MemberErrorCode;
 import tasteMap.backend.global.oauth2.dto.GoogleResponse;
 import tasteMap.backend.global.oauth2.dto.NaverResponse;
 import tasteMap.backend.global.oauth2.dto.OAuth2Response;
@@ -62,23 +64,20 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
     }
 
     private Member updateOrCreateMember(String username, OAuth2Response oAuth2Response) {
-        Member member = memberRepository.findByUsername(username);
-
-        if (member == null) {
-            // 새 사용자 생성
-            member = Member.builder()
+        Member member = memberRepository.findByUsername(username)
+            .orElseGet(() -> Member.builder()
                 .username(username)
                 .name(oAuth2Response.getName())
                 .email(oAuth2Response.getEmail())
                 .profile_image(oAuth2Response.getProfileImage())
                 .role(Role.valueOf("ROLE_USER"))
-                .build();
-        } else {
-            member.setProfile_image(oAuth2Response.getProfileImage());
-            // 기존 사용자 업데이트
-            member.setEmail(oAuth2Response.getEmail());
-            member.setName(oAuth2Response.getName());
-        }
+                .build()
+            );
+
+        // 사용자 정보 업데이트 (새 사용자 또는 기존 사용자 모두)
+        member.setProfile_image(oAuth2Response.getProfileImage());
+        member.setEmail(oAuth2Response.getEmail());
+        member.setName(oAuth2Response.getName());
 
         // 사용자 정보를 데이터베이스에 저장
         return memberRepository.save(member);

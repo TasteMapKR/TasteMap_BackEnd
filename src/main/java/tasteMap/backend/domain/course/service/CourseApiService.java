@@ -29,9 +29,9 @@ public class CourseApiService {
      */
     public Page<CourseMyDTO> getCoursesByMemberId(String username, Pageable pageable) {
         // 사용자 이름으로 멤버 찾기
-        Member member = memberRepository.findByUsername(username);
-        if(member == null)
-            throw new AppException(MemberErrorCode.MEMBER_NOT_FOUND);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));;
+
 
         // 멤버 ID로 코스 조회
         return courseRepository.findCoursesByMemberId(member.getId(), pageable);

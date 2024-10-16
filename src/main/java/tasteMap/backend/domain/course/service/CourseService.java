@@ -21,7 +21,8 @@ public class CourseService {
     private final MemberRepository memberRepository;
     @Transactional
     public Course save(CourseDTO courseDTO, String username){
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
         Category category = Category.valueOf(courseDTO.getCategory().toUpperCase());
         Course course = Course.builder()
             .title(courseDTO.getTitle())
@@ -37,10 +38,8 @@ public class CourseService {
     {
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new AppException(CourseErrorCode.COURSE_NOT_FOUND));
-        Member member = memberRepository.findByUsername(username);
-        if (member == null) {
-            throw new AppException(MemberErrorCode.MEMBER_NOT_FOUND);
-        }
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         // 해당 Course가 현재 사용자에 의해 소유되고 있는지 확인
         if (course.getMember().equals(member)) {
@@ -55,10 +54,8 @@ public class CourseService {
         // 기존 Course 객체를 조회
         Course course = courseRepository.findById(courseId)
             .orElseThrow(() -> new AppException(CourseErrorCode.COURSE_NOT_FOUND));
-        Member member = memberRepository.findByUsername(username);
-        if (member == null) {
-            throw new AppException(MemberErrorCode.MEMBER_NOT_FOUND);
-        }
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 
         // 해당 Course가 현재 사용자에 의해 소유되고 있는지 확인

@@ -17,6 +17,8 @@ import tasteMap.backend.global.exception.AppException;
 import tasteMap.backend.global.exception.errorCode.CourseErrorCode;
 import tasteMap.backend.global.exception.errorCode.MemberErrorCode;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,7 +72,7 @@ public class CourseServiceTest {
             .member(member)
             .build();
 
-        when(memberRepository.findByUsername("user1")).thenReturn(member);
+        when(memberRepository.findByUsername("user1")).thenReturn(Optional.ofNullable(member));
         when(courseRepository.save(any(Course.class))).thenReturn(savedCourse);
 
         Course result = courseService.save(courseDTO, "user1");
@@ -86,7 +88,7 @@ public class CourseServiceTest {
     @Test
     void testDeleteCourse() {
         when(courseRepository.findById(1L)).thenReturn(java.util.Optional.of(course));
-        when(memberRepository.findByUsername("user1")).thenReturn(member);
+        when(memberRepository.findByUsername("user1")).thenReturn(Optional.ofNullable(member));
 
         courseService.delete(1L, "user1");
 
@@ -109,7 +111,7 @@ public class CourseServiceTest {
     void testDeleteCourseUnauthorized() {
         Member otherMember = Member.builder().id(2L).username("user2").build();
         when(courseRepository.findById(1L)).thenReturn(java.util.Optional.of(course));
-        when(memberRepository.findByUsername("user2")).thenReturn(otherMember);
+        when(memberRepository.findByUsername("user2")).thenReturn(Optional.ofNullable(otherMember));
 
         AppException thrown = assertThrows(AppException.class, () -> {
             courseService.delete(1L, "user2");
@@ -129,7 +131,7 @@ public class CourseServiceTest {
             .build();
 
         when(courseRepository.findById(1L)).thenReturn(java.util.Optional.of(course));
-        when(memberRepository.findByUsername("user1")).thenReturn(member);
+        when(memberRepository.findByUsername("user1")).thenReturn(Optional.ofNullable(member));
         when(courseRepository.save(any(Course.class))).thenReturn(updatedCourse);
 
         Course result = courseService.update(1L, courseDTO, "user1");
@@ -157,7 +159,7 @@ public class CourseServiceTest {
     void testUpdateCourseUnauthorized() {
         Member otherMember = Member.builder().id(2L).username("user2").build();
         when(courseRepository.findById(1L)).thenReturn(java.util.Optional.of(course));
-        when(memberRepository.findByUsername("user2")).thenReturn(otherMember);
+        when(memberRepository.findByUsername("user2")).thenReturn(Optional.ofNullable(otherMember));
 
         AppException thrown = assertThrows(AppException.class, () -> {
             courseService.update(1L, courseDTO, "user2");

@@ -22,6 +22,7 @@ import tasteMap.backend.domain.course.repository.CourseRepository;
 
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -51,7 +52,7 @@ public class CourseApiServiceTest {
         Page<CourseMyDTO> page = new PageImpl<>(Collections.singletonList(courseMyDTO));
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(memberRepository.findByUsername(anyString())).thenReturn(member);
+        when(memberRepository.findByUsername(anyString())).thenReturn(Optional.of(member));
         when(courseRepository.findCoursesByMemberId(anyLong(), any(Pageable.class))).thenReturn(page);
 
         Page<CourseMyDTO> result = courseApiService.getCoursesByMemberId("testuser", pageable);

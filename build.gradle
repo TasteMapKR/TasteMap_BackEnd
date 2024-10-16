@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// Spring Cloud AWS를 사용하기 위한 의존성 (AWS 관련 기능 통합)
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
