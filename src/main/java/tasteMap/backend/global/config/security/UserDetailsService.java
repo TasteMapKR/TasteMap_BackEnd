@@ -15,7 +15,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) {
+    public CustomUserDetails loadUserByUsername(String username) {
         Member member = memberRepository.findByUsername(username);
         MemberDTO memberDTO = MemberDTO.builder()
             .username(member.getUsername())
