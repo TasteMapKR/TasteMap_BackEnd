@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tasteMap.backend.domain.course.dto.request.CourseDTO;
+import tasteMap.backend.domain.course.dto.request.CourseRequestDTO;
 import tasteMap.backend.domain.course.entity.Course;
 import tasteMap.backend.domain.course.service.CourseService;
 import tasteMap.backend.domain.root.dto.RootDTO;
@@ -36,19 +37,15 @@ public class CourseController {
      */
     @PostMapping
     public ResponseEntity<?> addCourse(
-        @RequestPart("course") @Valid CourseDTO courseDTO,
-        @RequestPart(value = "courseImage") MultipartFile courseImage,
-        @RequestPart("roots") List<@Valid RootDTO> roots,
-        @RequestPart(value = "rootImages") List<MultipartFile> rootImages,
+        @RequestBody @Valid CourseRequestDTO courseRequestDTO,
         @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        Course course = courseService.save(courseDTO, customUserDetails.getUsername());
-        s3Uploader.uploadCourse(courseImage, course.getId());
+        Course course = courseService.save(courseRequestDTO.courseDTO(), customUserDetails.getUsername());
+        s3Uploader.uploadCourse(courseRequestDTO.courseImage(), course.getId());
 
-        rootService.save(roots, course);
-        if (rootImages != null && !rootImages.isEmpty()) {
-            log.info("{}", rootImages.size());
-            s3Uploader.uploadRoot(rootImages, course.getId());
+        rootService.save(courseRequestDTO.roots(), course);
+        if (courseRequestDTO.rootImages() != null && !courseRequestDTO.rootImages().isEmpty()) {
+            s3Uploader.uploadRoot(courseRequestDTO.rootImages(), course.getId());
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of("코스 저장 성공", null));
@@ -60,17 +57,15 @@ public class CourseController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCourse(@PathVariable Long id,
-                                          @RequestPart("course") @Valid CourseDTO courseDTO,
-                                          @RequestPart(value = "courseImage", required = false) MultipartFile courseImage,
-                                          @RequestPart("roots") List<@Valid RootDTO> roots,
-                                          @RequestPart(value = "rootImages", required = false) List<MultipartFile> rootImages,
+                                          @RequestBody @Valid CourseRequestDTO courseRequestDTO,
                                           @AuthenticationPrincipal CustomUserDetails customUserDetails){
-        Course course = courseService.update(id, courseDTO, customUserDetails.getUsername());
-        if(courseImage != null)
-            s3Uploader.uploadCourse(courseImage, course.getId());
-        rootService.updateRoots(course.getId(),roots);
-        if(rootImages != null)
-            s3Uploader.uploadRoot(rootImages, course.getId());
+        Course course = courseService.update(id, courseRequestDTO.courseDTO(), customUserDetails.getUsername());
+        if(courseRequestDTO.courseImage() != null)
+            s3Uploader.uploadCourse(courseRequestDTO.courseImage(), course.getId());
+
+        rootService.updateRoots(course.getId(),courseRequestDTO.roots());
+        if(courseRequestDTO.rootImages() != null)
+            s3Uploader.uploadRoot(courseRequestDTO.rootImages(), course.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.of("코스 업데이트 성공",null));
     }

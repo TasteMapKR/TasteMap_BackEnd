@@ -23,7 +23,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil; // JWT 유틸리티 클래스
     private final CustomSuccessHandler customSuccessHandler; // 인증 성공 시 처리할 커스텀 핸들러
     private final CustomOAuthUserService customOAuthUserService; // OAuth2 사용자 정보 서비스
     private final JwtFilter jwtFilter; // JWT 필터

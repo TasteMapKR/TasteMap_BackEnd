@@ -17,7 +17,7 @@ public class MemberApiController {
     // 로그인 사용자 조회
     @GetMapping("/")
     public ResponseEntity<?> getMember(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        MemberDTO member =customUserDetails.getMemberDTO();
+        MemberDTO member = customUserDetails.getMemberDTO();
         return ResponseEntity.status(200).body(ResponseDto.of("로그인 사용자 조회 성공", member));
     }
 
